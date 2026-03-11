@@ -6,9 +6,7 @@
 
 ## 🚀 Accés directe
 
-🔗 **[Obre BenzApp](https://el-teu-usuari.github.io/benzapp)**
-
-> *(Actualitza aquest enllaç amb la teva URL de GitHub Pages)*
+🔗 **[Obre BenzApp] (https://carontsubs.github.io/Benzapp/))**
 
 ---
 
