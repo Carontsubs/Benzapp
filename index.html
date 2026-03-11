@@ -556,19 +556,6 @@ function formatFecha(f){
 function openNav(g,a){ window.open(/iPhone|iPad|iPod/i.test(navigator.userAgent)?a:g,'_blank'); }
 function showError(title,sub){ document.getElementById('results').innerHTML=`<div class="empty-state"><div class="empty-icon">${title.split(' ')[0]}</div><div class="empty-title">${title.replace(/^[^\s]+\s/,'')}</div><div class="empty-sub">${sub}</div></div>`; }
 
-async function debugApi(){
-  const box = document.getElementById('debugBox');
-  box.style.display = 'block';
-  box.innerHTML = '⏳ Carregant...';
-  try {
-    const resp = await fetch('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/');
-    const data = await resp.json();
-    const s = (data.ListaEESSPrecio||[])[0];
-    if (!s) { box.innerHTML = 'Cap dada'; return; }
-    box.innerHTML = '<strong style="color:var(--fuel)">Camps disponibles (1a estació):</strong><br><br>' +
-      Object.entries(s).map(([k,v])=>`<span style="color:var(--text)">${k}</span>: <span>${v||'—'}</span>`).join('<br>');
-  } catch(e) { box.innerHTML = 'Error: '+e.message; }
-}
 
 window.addEventListener('load',()=>{ setMode('gps'); setTimeout(initLocation,2000); });
 </script>
