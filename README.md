@@ -1,59 +1,102 @@
-# ⛽ BenzApp — Carburant Barat
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   ██████╗ ███████╗███╗   ██╗███████╗ █████╗ ██████╗ ██████╗ ║
+║   ██╔══██╗██╔════╝████╗  ██║╚════██║██╔══██╗██╔══██╗██╔══██╗║
+║   ██████╔╝█████╗  ██╔██╗ ██║    ██╔╝███████║██████╔╝██████╔╝║
+║   ██╔══██╗██╔══╝  ██║╚██╗██║   ██╔╝ ██╔══██║██╔═══╝ ██╔═══╝ ║
+║   ██████╔╝███████╗██║ ╚████║   ██║  ██║  ██║██║     ██║     ║
+║   ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝  ╚═╝  ╚═╝╚═╝     ╚═╝     ║
+║                                                              ║
+║           CARBURANT BARAT - VERSIÓ 1.0 - (C) 2026           ║
+╚══════════════════════════════════════════════════════════════╝
+```
 
-> Troba les benzineres més barates al teu voltant, ordenades per preu, amb navegació directa.
-
----
-
-## 🚀 Accés directe
-
-🔗 **[Obre BenzApp] (https://carontsubs.github.io/Benzapp/))**
-
----
-
-## 📱 Com instal·lar-la al mòbil
-
-### iPhone / iPad
-1. Obre l'enllaç amb **Safari**
-2. Toca l'icona de compartir ↑
-3. Selecciona **"Afegir a la pantalla d'inici"**
-
-### Android
-1. Obre l'enllaç amb **Chrome**
-2. Toca els tres punts ⋮
-3. Selecciona **"Afegir a la pantalla d'inici"**
+    C:\BENZAPP> _
 
 ---
 
-## ✨ Funcionalitats
+## C:\BENZAPP> TYPE INFO.TXT
 
-- 📡 **Cerca per GPS** — detecta automàticament on ets
-- 📮 **Cerca per codi postal** — escriu 5 dígits i llest
-- 🏘️ **Cerca per municipi** — qualsevol poble o ciutat d'Espanya
-- ⛽ **Super 95 o Dièsel** — tries el carburant que fas servir
-- 📏 **Radi ajustable** — de 5 a 40 km
-- 💰 **Ordenat per preu** — de més barat a més car
-- 🗺️ **Navegació integrada** — obre Google Maps, Apple Maps o Waze directament
-- 🕐 **Data d'actualització** — saps quan s'han actualitzat els preus
+    Sistema operatiu : GitHub Pages
+    Versió           : 1.0
+    Data compilació  : 2026
+    Autor            : @el-teu-usuari
+    Llicència        : Lliure ús personal
+    Connexió         : API MINCOTUR (Ministeri d'Energia d'Espanya)
 
 ---
 
-## 📊 Font de dades
+## C:\BENZAPP> RUN APP.EXE
 
-Els preus provenen de l'**API oficial del Ministeri per a la Transició Ecològica i el Repte Demogràfic** d'Espanya (MINCOTUR), que agrupa les dades de totes les estacions de servei del territori espanyol.
+    🔗 https://el-teu-usuari.github.io/benzapp
 
-🔗 [sedeaplicaciones.minetur.gob.es](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/)
-
----
-
-## 🛠️ Tecnologia
-
-- HTML5 + CSS3 + JavaScript pur — sense llibreries externes
-- API REST MINCOTUR — preus en temps real
-- Nominatim (OpenStreetMap) — geocodificació de codis postals i municipis
-- 100% gratuït i sense publicitat
+    CARREGANT... ████████████████████ 100%
+    APLICACIÓ INICIADA CORRECTAMENT.
 
 ---
 
-## 📄 Llicència
+## C:\BENZAPP> HELP
 
-Lliure d'ús personal. Les dades de preus són propietat del Ministeri d'Espanya.
+    COMANDES DISPONIBLES:
+    ─────────────────────────────────────────────────────────
+    [1] CERCA PER GPS       - Detecta la teva ubicació actual
+    [2] CERCA PER CP        - Introdueix codi postal (5 digits)
+    [3] CERCA PER MUNICIPI  - Nom de qualsevol municipi d'Espanya
+    ─────────────────────────────────────────────────────────
+    CARBURANT: [A] SUPER 95    [B] DIÈSEL
+    RADI......: 5 km - 40 km (ajustable)
+    NAVEGACIÓ.: [1] GOOGLE MAPS  [2] APPLE MAPS  [3] WAZE
+    ─────────────────────────────────────────────────────────
+
+---
+
+## C:\BENZAPP> TYPE INSTALL.TXT
+
+    INSTAL·LACIÓ NO REQUERIDA.
+    AQUEST PROGRAMA NO OCUPA ESPAI AL DISC DUR.
+
+    >> iPhone/iPad:
+       1. Obre Safari
+       2. Botó compartir > "Afegir a pantalla d'inici"
+       3. Prem [ENTER]
+
+    >> Android:
+       1. Obre Chrome
+       2. Menu > "Afegir a pantalla d'inici"
+       3. Prem [ENTER]
+
+---
+
+## C:\BENZAPP> TYPE SPECS.TXT
+
+    TECNOLOGIA.....: HTML5 + CSS3 + JavaScript
+    FRAMEWORKS.....: CAP (0 dependències)
+    BACKEND........: CAP (100% client-side)
+    BASE DE DADES..: CAP
+    COST MENSUAL...: 0,00 €
+    PUBLICITAT.....: CAP
+    REGISTRE.......: NO REQUERIT
+    FONT DE DADES..: API oficial MINCOTUR
+                     +11.000 estacions a Espanya
+                     Actualització diària
+
+---
+
+## C:\BENZAPP> TYPE SOURCE.TXT
+
+    Codi font disponible a GitHub:
+    🔗 https://github.com/el-teu-usuari/benzapp
+
+    CONTRIBUCIONS BENVINGUDES.
+    PULL REQUESTS ACCEPTATS.
+
+---
+
+```
+C:\BENZAPP> EXIT
+
+    Gràcies per fer servir BENZAPP.
+    Que sempre trobis el preu més barat.
+
+```
