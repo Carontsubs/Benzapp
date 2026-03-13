@@ -86,7 +86,7 @@
 ## C:\BENZAPP> TYPE SOURCE.TXT
 
     Codi font disponible a GitHub:
-    🔗 https://github.com/el-teu-usuari/benzapp
+    🔗 https://github.com/carontsubs/benzapp
 
     CONTRIBUCIONS BENVINGUDES.
     PULL REQUESTS ACCEPTATS.
