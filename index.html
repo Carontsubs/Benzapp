@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BenzApp – Carburant Barat</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fuel:#E8A020; --diesel:#2196F3;
+    --bg:#0D0F14; --bg2:#13161D; --bg3:#1C202B;
+    --border:rgba(255,255,255,0.07);
+    --text:#F0F2F8; --muted:#6B7280;
+    --green:#22C55E; --red:#EF4444;
+    --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden}
+
+  /* SPLASH */
+  #splash{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;animation:splashOut 0.5s ease 1.8s forwards;pointer-events:none}
+  @keyframes splashOut{to{opacity:0;pointer-events:none}}
+  .splash-logo{font-family:'Bebas Neue';font-size:64px;letter-spacing:4px;background:linear-gradient(135deg,var(--fuel),#fff 60%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:logoPop 0.6s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes logoPop{from{transform:scale(0.6);opacity:0}to{transform:scale(1);opacity:1}}
+  .splash-sub{color:var(--muted);font-size:14px;letter-spacing:2px;text-transform:uppercase}
+
+  header{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between}
+  .app-title{font-family:'Bebas Neue';font-size:32px;letter-spacing:2px;color:var(--fuel)}
+  .loc-pill{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--muted);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .section{padding:20px}
+  .section-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+
+  /* MODE TABS */
+  .mode-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;background:var(--bg3);border-radius:12px;padding:4px;margin-bottom:16px}
+  .mode-btn{padding:10px 4px;border:none;border-radius:8px;font-family:'DM Sans';font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s ease;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:4px}
+  .mode-btn.active{background:var(--bg2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+
+  /* GPS */
+  .gps-box{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;font-size:13px}
+  .gps-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:var(--muted)}
+  .gps-dot.ok{background:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,0.2)}
+  .gps-dot.err{background:var(--red)}
+  .gps-dot.loading{background:var(--fuel);animation:pulse 1s ease infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  .gps-retry{margin-left:auto;padding:6px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--fuel);cursor:pointer;font-family:'DM Sans';font-weight:500;display:none}
+
+  /* SHARED INPUT STYLE */
+  .search-input{width:100%;padding:14px 16px;background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans';font-size:16px;color:var(--text);outline:none;transition:border-color 0.2s;-webkit-appearance:none}
+  .search-input:focus{border-color:var(--fuel)}
+  .search-input::placeholder{color:var(--muted)}
+
+  /* CP INPUT */
+  .cp-wrap{position:relative}
+  .cp-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none}
+  .cp-input{padding-left:44px !important}
+  .cp-clear{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;display:none;line-height:1}
+
+  /* MUNI INPUT */
+  .muni-wrap{position:relative}
+  .muni-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none}
+  .muni-input-field{padding-left:44px !important}
+  .muni-clear{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;display:none;line-height:1}
+  .muni-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:100;background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 12px 32px rgba(0,0,0,0.5);max-height:260px;overflow-y:auto;display:none}
+  .muni-dropdown.show{display:block}
+  .muni-item{padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);transition:background 0.1s}
+  .muni-item:last-child{border-bottom:none}
+  .muni-item:hover,.muni-item:active{background:var(--bg3)}
+  .muni-item-name{font-size:14px;font-weight:500;flex:1}
+  .muni-item-extra{font-size:11px;color:var(--muted);flex-shrink:0}
+  .dd-msg{padding:14px 16px;text-align:center;color:var(--muted);font-size:13px}
+
+  /* SELECTED PLACE */
+  .place-selected{display:none;align-items:center;gap:10px;background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.3);border-radius:12px;padding:12px 16px}
+  .place-selected.show{display:flex}
+  .place-sel-name{font-weight:600;font-size:15px;flex:1}
+  .place-sel-sub{font-size:12px;color:var(--muted)}
+  .place-change{padding:6px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--muted);cursor:pointer;font-family:'DM Sans';flex-shrink:0}
+
+  /* FUEL */
+  .fuel-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .fuel-btn{background:var(--bg3);border:2px solid var(--border);border-radius:var(--radius);padding:20px 16px;cursor:pointer;transition:all 0.2s ease;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;overflow:hidden}
+  .fuel-btn::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.2s}
+  .fuel-btn.gasolina::before{background:radial-gradient(circle at 50% 0%,rgba(232,160,32,0.15),transparent 70%)}
+  .fuel-btn.diesel::before{background:radial-gradient(circle at 50% 0%,rgba(33,150,243,0.15),transparent 70%)}
+  .fuel-btn.active::before{opacity:1}
+  .fuel-btn.active.gasolina{border-color:var(--fuel);box-shadow:0 0 0 1px var(--fuel),0 8px 24px rgba(232,160,32,0.2)}
+  .fuel-btn.active.diesel{border-color:var(--diesel);box-shadow:0 0 0 1px var(--diesel),0 8px 24px rgba(33,150,243,0.2)}
+  .fuel-icon{font-size:32px}.fuel-name{font-weight:600;font-size:15px}.fuel-detail{font-size:11px;color:var(--muted)}
+  .fuel-check{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:0;transform:scale(0);transition:all 0.2s cubic-bezier(.34,1.56,.64,1)}
+  .gasolina .fuel-check{background:var(--fuel)}.diesel .fuel-check{background:var(--diesel)}
+  .fuel-btn.active .fuel-check{opacity:1;transform:scale(1)}
+
+  /* RADIUS */
+  .radius-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .radius-value{font-family:'Bebas Neue';font-size:28px;color:var(--fuel);line-height:1}
+  .radius-value span{font-family:'DM Sans';font-size:13px;color:var(--muted);font-weight:400}
+  input[type=range]{width:100%;height:4px;background:var(--bg3);border-radius:2px;outline:none;-webkit-appearance:none;cursor:pointer;accent-color:var(--fuel)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--fuel);box-shadow:0 0 0 4px rgba(232,160,32,0.2);cursor:pointer}
+
+  /* SEARCH BTN */
+  .search-btn{width:100%;padding:18px;background:var(--fuel);border:none;border-radius:var(--radius);font-family:'Bebas Neue';font-size:20px;letter-spacing:2px;color:#000;cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;justify-content:center;gap:10px}
+  .search-btn:active{transform:scale(0.97)}
+  .search-btn.loading{pointer-events:none;opacity:0.8}
+  .spinner{width:20px;height:20px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite;display:none}
+  .search-btn.loading .spinner{display:block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* RESULTS */
+  #results{padding:0 20px 100px}
+  .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .results-count{font-size:13px;color:var(--muted)}
+  .sort-badge{font-size:11px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 10px;color:var(--muted)}
+  .station-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;animation:cardIn 0.4s ease both}
+  @keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .card-rank{position:absolute;left:0;top:0;bottom:0;width:4px}
+  .rank-1 .card-rank{background:#22C55E}.rank-2 .card-rank{background:#84CC16}.rank-3 .card-rank{background:#EAB308}.rank-n .card-rank{background:var(--border)}
+  .card-top{display:flex;align-items:flex-start;padding:16px 16px 12px 20px;gap:12px;position:relative}
+  .rank-badge{min-width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:16px;flex-shrink:0}
+  .rank-1 .rank-badge{background:rgba(34,197,94,0.15);color:#22C55E}.rank-2 .rank-badge{background:rgba(132,204,22,0.15);color:#84CC16}.rank-3 .rank-badge{background:rgba(234,179,8,0.15);color:#EAB308}.rank-n .rank-badge{background:var(--bg3);color:var(--muted)}
+  .station-info{flex:1;min-width:0}
+  .station-name{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .station-addr{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .station-dist{font-size:12px;color:var(--muted);margin-top:4px}
+  .price-block{text-align:right;flex-shrink:0}
+  .price-main{font-family:'Bebas Neue';font-size:28px;line-height:1}
+  .rank-1 .price-main{color:#22C55E}.rank-2 .price-main{color:#84CC16}.rank-3 .price-main{color:#EAB308}.rank-n .price-main{color:var(--text)}
+  .price-unit{font-size:11px;color:var(--muted)}.price-diff{font-size:11px;margin-top:2px;color:var(--red)}
+  .cheapest-badge{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#22C55E;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px}
+  .update-date{font-size:11px;margin-top:3px}
+  .update-date.fresh{color:var(--green)}
+  .update-date.stale{color:#F59E0B}
+  .card-bottom{border-top:1px solid var(--border);display:flex}
+  .nav-btn{flex:1;padding:12px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:500;color:var(--muted);font-family:'DM Sans';transition:all 0.15s ease}
+  .nav-btn:first-child{border-right:1px solid var(--border)}
+  .nav-btn:hover{background:var(--bg3);color:var(--text)}
+  .nav-btn.primary{color:var(--fuel)}
+  .nav-btn.primary:hover{background:rgba(232,160,32,0.08)}
+  .empty-state{text-align:center;padding:60px 20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .empty-icon{font-size:48px}.empty-title{font-weight:600;font-size:18px}.empty-sub{font-size:14px;color:var(--muted);line-height:1.5}
+  .status-bar{height:44px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px;padding:0 4px}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-logo">⛽ BENZ<span style="color:#fff">APP</span></div>
+  <div class="splash-sub">Carburant barat, sempre</div>
+</div>
+
+<div class="status-bar"></div>
+
+<header>
+  <div class="app-title">⛽ BenzApp</div>
+  <div class="loc-pill"><span>📍</span><span id="locationText">...</span></div>
+</header>
+
+<!-- LOCATION MODE -->
+<div class="section">
+  <div class="section-label">Com vols cercar?</div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btnGps"  onclick="setMode('gps')">📡 GPS</button>
+    <button class="mode-btn"        id="btnCp"   onclick="setMode('cp')">📮 Codi postal</button>
+    <button class="mode-btn"        id="btnMuni" onclick="setMode('muni')">🏘️ Municipi</button>
+  </div>
+
+  <!-- GPS -->
+  <div id="gpsSection">
+    <div class="gps-box">
+      <div class="gps-dot loading" id="gpsDot"></div>
+      <span id="gpsText">Obtenint ubicació...</span>
+      <button class="gps-retry" id="gpsRetry" onclick="initLocation()">Reintentar</button>
+    </div>
+  </div>
+
+  <!-- CODI POSTAL -->
+  <div id="cpSection" style="display:none">
+    <div id="cpInputWrap">
+      <div class="cp-wrap">
+        <span class="cp-icon">📮</span>
+        <input class="search-input cp-input" id="cpInput"
+          type="tel" inputmode="numeric" maxlength="5"
+          placeholder="Ex: 08001, 28001, 41001..."
+          oninput="onCpInput()" autocomplete="postal-code">
+        <button class="cp-clear" id="cpClear" onclick="clearCp()">×</button>
+      </div>
+      <div class="hint">Introdueix els 5 dígits del codi postal</div>
+    </div>
+    <div class="place-selected" id="cpSelected">
+      <span style="font-size:20px">📮</span>
+      <div style="flex:1;min-width:0">
+        <div class="place-sel-name" id="cpSelName">—</div>
+        <div class="place-sel-sub" id="cpSelSub"></div>
+      </div>
+      <button class="place-change" onclick="changeCp()">Canviar</button>
+    </div>
+  </div>
+
+  <!-- MUNICIPI -->
+  <div id="muniSection" style="display:none">
+    <div id="muniInputWrap">
+      <div class="muni-wrap">
+        <span class="muni-icon">🔍</span>
+        <input class="search-input muni-input-field" id="muniInput"
+          type="text" placeholder="Ex: Barcelona, Girona, Sabadell..."
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+          oninput="onMuniInput()" onfocus="onMuniFocus()">
+        <button class="muni-clear" id="muniClear" onclick="clearMuni()">×</button>
+        <div class="muni-dropdown" id="muniDropdown"></div>
+      </div>
+      <div class="hint">Cerca per nom de municipi a tota Espanya</div>
+    </div>
+    <div class="place-selected" id="muniSelected">
+      <span style="font-size:20px">🏘️</span>
+      <div style="flex:1;min-width:0">
+        <div class="place-sel-name" id="muniSelName">—</div>
+        <div class="place-sel-sub" id="muniSelSub"></div>
+      </div>
+      <button class="place-change" onclick="changeMuni()">Canviar</button>
+    </div>
+  </div>
+</div>
+
+<!-- FUEL -->
+<div class="section" style="padding-top:0">
+  <div class="section-label">Tipus de carburant</div>
+  <div class="fuel-grid">
+    <button class="fuel-btn gasolina active" onclick="selectFuel('gasolina')">
+      <div class="fuel-check">✓</div>
+      <div class="fuel-icon">🟡</div>
+      <div class="fuel-name">Super 95</div>
+      <div class="fuel-detail">Gasolina sense plom</div>
+    </button>
+    <button class="fuel-btn diesel" onclick="selectFuel('diesel')">
+      <div class="fuel-check">✓</div>
+      <div class="fuel-icon">🔵</div>
+      <div class="fuel-name">Dièsel</div>
+      <div class="fuel-detail">Gasoil A</div>
+    </button>
+  </div>
+</div>
+
+<!-- RADIUS -->
+<div class="section" style="padding-top:0">
+  <div class="section-label">Radi de cerca</div>
+  <div class="radius-row">
+    <div class="radius-value" id="radiusVal">20 <span>km</span></div>
+    <div style="font-size:12px;color:var(--muted)">màx. 40 km</div>
+  </div>
+  <input type="range" min="5" max="40" value="20" step="5" id="radiusSlider"
+    oninput="document.getElementById('radiusVal').innerHTML=this.value+' <span>km</span>'">
+</div>
+
+<!-- SEARCH BTN -->
+<div class="section" style="padding-top:0">
+  <button class="search-btn" id="searchBtn" onclick="doSearch()">
+    <div class="spinner"></div>
+    <span class="btn-text">🔍 CERCAR BENZINERES</span>
+  </button>
+</div>
+
+<div id="results"></div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────
+let userLat = null, userLon = null;
+let selectedFuel = 'gasolina';
+let currentMode = 'gps';
+let muniTimer = null;
+
+// ── MODE ──────────────────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  ['gps','cp','muni'].forEach(m => {
+    document.getElementById('btn'+m.charAt(0).toUpperCase()+m.slice(1)).classList.toggle('active', m===mode);
+    document.getElementById(m+'Section').style.display = m===mode ? 'block' : 'none';
+  });
+  if (mode !== 'gps') { userLat = null; userLon = null; document.getElementById('locationText').textContent = '...'; }
+  if (mode === 'gps') initLocation();
+}
+
+// ── GPS ───────────────────────────────────────────────────
+function initLocation() {
+  if (!navigator.geolocation) { setGpsState('err','No disponible'); return; }
+  setGpsState('loading','Obtenint ubicació...');
+  navigator.geolocation.getCurrentPosition(pos => {
+    userLat = pos.coords.latitude; userLon = pos.coords.longitude;
+    document.getElementById('gpsRetry').style.display = 'none';
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLon}&format=json`)
+      .then(r=>r.json()).then(d=>{
+        const city = d.address?.city||d.address?.town||d.address?.village||d.address?.municipality||'Ubicació OK';
+        setGpsState('ok','📍 '+city);
+        document.getElementById('locationText').textContent = city;
+      }).catch(()=>setGpsState('ok','Ubicació obtinguda ✓'));
+  }, () => {
+    setGpsState('err','Sense permís de localització');
+    document.getElementById('gpsRetry').style.display = 'inline-block';
+    document.getElementById('locationText').textContent = 'Sense permís';
+  }, {enableHighAccuracy:true,timeout:10000});
+}
+function setGpsState(s,t){ document.getElementById('gpsDot').className='gps-dot '+s; document.getElementById('gpsText').textContent=t; }
+
+// ── CODI POSTAL ───────────────────────────────────────────
+function onCpInput() {
+  const v = document.getElementById('cpInput').value.replace(/\D/g,'');
+  document.getElementById('cpInput').value = v;
+  document.getElementById('cpClear').style.display = v ? 'block' : 'none';
+  if (v.length === 5) geocodeCp(v);
+}
+
+async function geocodeCp(cp) {
+  try {
+    // Use Nominatim with postalcode
+    const url = `https://nominatim.openstreetmap.org/search?postalcode=${cp}&countrycodes=es&format=json&addressdetails=1&limit=1`;
+    const r = await fetch(url, {headers:{'Accept-Language':'ca,es'}});
+    const data = await r.json();
+    if (!data.length) { showCpError('Codi postal no trobat'); return; }
+    const d = data[0];
+    const lat = parseFloat(d.lat), lon = parseFloat(d.lon);
+    const city = d.address?.city||d.address?.town||d.address?.village||d.address?.municipality||d.display_name.split(',')[0];
+    const prov = d.address?.province||d.address?.state_district||d.address?.state||'';
+    setCpSelected(lat, lon, cp, city, prov);
+  } catch(e) {
+    // Fallback: use direct lookup via another nominatim format
+    tryNominatimFallback(cp);
+  }
+}
+
+async function tryNominatimFallback(cp) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${cp}+Spain&format=json&addressdetails=1&limit=3`;
+    const r = await fetch(url, {headers:{'Accept-Language':'ca,es'}});
+    const data = await r.json();
+    const d = data.find(x => x.address?.postcode === cp || x.display_name.includes(cp));
+    if (!d) { showCpError('Codi postal no trobat'); return; }
+    const lat = parseFloat(d.lat), lon = parseFloat(d.lon);
+    const city = d.address?.city||d.address?.town||d.address?.village||d.address?.municipality||cp;
+    const prov = d.address?.province||d.address?.state||'';
+    setCpSelected(lat, lon, cp, city, prov);
+  } catch(e) { showCpError('Error de connexió'); }
+}
+
+function showCpError(msg) {
+  document.getElementById('cpInput').style.borderColor = 'var(--red)';
+  setTimeout(()=>document.getElementById('cpInput').style.borderColor='',2000);
+}
+
+function setCpSelected(lat, lon, cp, city, prov) {
+  userLat = lat; userLon = lon;
+  document.getElementById('locationText').textContent = cp+' '+city;
+  document.getElementById('cpInputWrap').style.display = 'none';
+  document.getElementById('cpSelected').classList.add('show');
+  document.getElementById('cpSelName').textContent = cp + ' – ' + city;
+  document.getElementById('cpSelSub').textContent = prov;
+}
+
+function clearCp() {
+  document.getElementById('cpInput').value = '';
+  document.getElementById('cpClear').style.display = 'none';
+  userLat = null; userLon = null;
+}
+
+function changeCp() {
+  userLat = null; userLon = null;
+  document.getElementById('cpInputWrap').style.display = 'block';
+  document.getElementById('cpSelected').classList.remove('show');
+  document.getElementById('cpInput').value = '';
+  document.getElementById('cpClear').style.display = 'none';
+  document.getElementById('locationText').textContent = '...';
+  setTimeout(()=>document.getElementById('cpInput').focus(),100);
+}
+
+// ── MUNICIPALITY ──────────────────────────────────────────
+function onMuniInput() {
+  const v = document.getElementById('muniInput').value.trim();
+  document.getElementById('muniClear').style.display = v ? 'block' : 'none';
+  clearTimeout(muniTimer);
+  if (v.length < 2) { closeDropdown(); return; }
+  muniTimer = setTimeout(()=>searchMunis(v), 400);
+}
+function onMuniFocus() {
+  const v = document.getElementById('muniInput').value.trim();
+  if (v.length >= 2) searchMunis(v);
+}
+
+async function searchMunis(q) {
+  const dd = document.getElementById('muniDropdown');
+  dd.innerHTML = '<div class="dd-msg">🔍 Cercant...</div>';
+  dd.classList.add('show');
+  try {
+    // Use structured query for better results with Spanish municipalities
+    const url = `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(q)}&countrycodes=es&format=json&limit=8&addressdetails=1`;
+    const r = await fetch(url, {headers:{'Accept-Language':'ca,es'}});
+    let data = await r.json();
+
+    // If no results with city param, try general search
+    if (!data.length) {
+      const url2 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}%2C+Espa%C3%B1a&format=json&limit=8&addressdetails=1`;
+      const r2 = await fetch(url2, {headers:{'Accept-Language':'ca,es'}});
+      data = await r2.json();
+    }
+
+    const places = data.filter(d =>
+      d.class === 'place' ||
+      ['city','town','village','municipality','administrative'].includes(d.type)
+    );
+
+    const seen = new Set();
+    const items = places.filter(d => {
+      const k = (d.address?.city||d.address?.town||d.address?.village||d.address?.municipality||d.display_name.split(',')[0]).trim().toLowerCase();
+      if (seen.has(k)) return false; seen.add(k); return true;
+    }).slice(0,7);
+
+    if (!items.length) { dd.innerHTML = '<div class="dd-msg">Cap resultat. Prova amb codi postal.</div>'; return; }
+
+    window._muniResults = items.map(d => ({
+      name: (d.address?.city||d.address?.town||d.address?.village||d.address?.municipality||d.display_name.split(',')[0]).trim(),
+      prov: d.address?.province||d.address?.state_district||d.address?.state||'',
+      cp: d.address?.postcode||'',
+      lat: parseFloat(d.lat),
+      lon: parseFloat(d.lon)
+    }));
+
+    dd.innerHTML = window._muniResults.map((m,i) =>
+      `<div class="muni-item" onclick="selectMuniByIndex(${i})">
+        <span style="font-size:16px">🏘️</span>
+        <span class="muni-item-name">${m.name}</span>
+        <span class="muni-item-extra">${m.prov}</span>
+      </div>`
+    ).join('');
+  } catch(e) {
+    dd.innerHTML = '<div class="dd-msg">Error de connexió</div>';
+  }
+}
+
+function selectMuniByIndex(i) {
+  const m = window._muniResults[i];
+  if (!m) return;
+  selectMuni(m.lat, m.lon, m.name, m.prov, m.cp);
+}
+
+function selectMuni(lat,lon,name,prov,cp) {
+  userLat=lat; userLon=lon;
+  document.getElementById('locationText').textContent = name;
+  document.getElementById('muniInputWrap').style.display = 'none';
+  document.getElementById('muniSelected').classList.add('show');
+  document.getElementById('muniSelName').textContent = name;
+  document.getElementById('muniSelSub').textContent = [prov,cp].filter(Boolean).join(' · ');
+  closeDropdown();
+}
+
+function changeMuni() {
+  userLat=null; userLon=null;
+  document.getElementById('muniInputWrap').style.display='block';
+  document.getElementById('muniSelected').classList.remove('show');
+  document.getElementById('muniInput').value='';
+  document.getElementById('muniClear').style.display='none';
+  document.getElementById('locationText').textContent='...';
+  setTimeout(()=>document.getElementById('muniInput').focus(),100);
+}
+function clearMuni(){ document.getElementById('muniInput').value=''; document.getElementById('muniClear').style.display='none'; closeDropdown(); }
+function closeDropdown(){ document.getElementById('muniDropdown').classList.remove('show'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('#muniSearchWrap') && !e.target.closest('#muniDropdown')) closeDropdown(); });
+
+// ── FUEL ──────────────────────────────────────────────────
+function selectFuel(t){ selectedFuel=t; document.querySelectorAll('.fuel-btn').forEach(b=>b.classList.remove('active')); document.querySelector('.fuel-btn.'+t).classList.add('active'); }
+
+// ── HAVERSINE ─────────────────────────────────────────────
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+// ── SEARCH ────────────────────────────────────────────────
+async function doSearch(){
+  if(!userLat||!userLon){
+    const msgs = {
+      gps:['📡 Sense ubicació GPS','Activa la geolocalització o usa codi postal.'],
+      cp:['📮 Cap codi postal','Introdueix un codi postal de 5 dígits.'],
+      muni:['🏘️ Cap municipi','Selecciona un municipi de la llista.']
+    };
+    showError(...msgs[currentMode]); return;
+  }
+  const radiusKm=parseInt(document.getElementById('radiusSlider').value);
+  const btn=document.getElementById('searchBtn');
+  btn.classList.add('loading'); btn.querySelector('.btn-text').textContent='CERCANT...';
+  document.getElementById('results').innerHTML='';
+  try{
+    const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),15000);const resp=await fetch('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/',{signal:controller.signal});clearTimeout(timeout);
+    const data=await resp.json();
+    const globalDate = data.Fecha || data.FechaActualizacion || data.fecha || "";
+    const priceData=data.ListaEESSPrecio||[];
+    const priceKey=selectedFuel==="gasolina"?"Precio Gasolina 95 E5":"Precio Gasoleo A";
+    const stations=priceData.map(s=>{
+      const lat=parseFloat(s["Latitud"]?.replace(",","."));
+      const lon=parseFloat((s["Longitud (WGS84)"]||s["Longitud"])?.replace(",","."));
+      const price=parseFloat(s[priceKey]?.replace(",","."));
+      if(!lat||!lon||!price) return null;
+      const dist=haversine(userLat,userLon,lat,lon);
+      if(dist>radiusKm) return null;
+      return{name:s["Rótulo"]||"Benzinera",address:(s["Dirección"]||"")+", "+(s["Municipio"]||""),lat,lon,price,dist,cp:s["C.P."]||""};
+    }).filter(Boolean).sort((a,b)=>a.price-b.price);
+    renderResults(stations, globalDate);
+  }catch(e){
+    const msg = e.name==='AbortError' ? "L'API tarda massa en respondre. Torna-ho a intentar en uns minuts." : "No s'han pogut carregar els preus. Comprova la connexió."; showError('❌ Error de connexió', msg);
+  }finally{
+    btn.classList.remove('loading'); btn.querySelector('.btn-text').textContent='🔍 CERCAR BENZINERES';
+  }
+}
+
+function renderResults(stations, globalDate){
+  const c=document.getElementById('results');
+  const r=document.getElementById('radiusSlider').value;
+  if(!stations.length){ showError('🏜️ Sense resultats',`No s'han trobat benzineres amb ${selectedFuel==='gasolina'?'Super 95':'Dièsel'} en ${r} km. Augmenta el radi.`); return; }
+  const cheapest=stations[0].price;
+  const dateLabel = globalDate ? `<span style="font-size:11px;color:var(--muted)">🕐 Preus del ${globalDate}</span>` : ""; let html=`<div class="results-header"><div><div class="results-count">${stations.length} benzineres trobades</div>${dateLabel}</div><div class="sort-badge">↑ Preu</div></div>`;
+  stations.forEach((s,i)=>{
+    const rc=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-n';
+    const diff=s.price-cheapest;
+    const delay=Math.min(i*0.06,0.5);
+    const gNav=`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lon}&travelmode=driving`;
+    const aNav=`https://maps.apple.com/?daddr=${s.lat},${s.lon}&dirflg=d`;
+    const wNav=`https://waze.com/ul?ll=${s.lat},${s.lon}&navigate=yes`;
+    html+=`
+      <div class="station-card ${rc}" style="animation-delay:${delay}s">
+        <div class="card-rank"></div>
+        <div class="card-top">
+          <div class="rank-badge">${i+1}</div>
+          <div class="station-info">
+            <div class="station-name">${s.name}</div>
+            <div class="station-addr">${s.address}</div>
+            <div class="station-dist">📍 ${s.dist.toFixed(1)} km${s.cp?' · CP '+s.cp:''}</div>
+            ${i===0?'<span class="cheapest-badge">⭐ Més barat</span>':''}
+          </div>
+          <div class="price-block">
+            <div class="price-main">${s.price.toFixed(3)}</div>
+            <div class="price-unit">€/L</div>
+            ${diff>0?`<div class="price-diff">+${diff.toFixed(3)}</div>`:''}
+          </div>
+        </div>
+        <div class="card-bottom">
+          <button class="nav-btn" onclick="openNav('${gNav}','${aNav}')">🗺️ Maps</button>
+          <button class="nav-btn primary" onclick="window.open('${wNav}','_blank')">🚗 Waze</button>
+        </div>
+      </div>`;
+  });
+  c.innerHTML=html;
+}
+
+function formatFecha(f){
+  if(!f) return null;
+  // Format from API is typically "DD/MM/AAAA" or "DD/MM/AAAA HH:MM:SS"
+  const m = f.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if(!m) return null;
+  const d=parseInt(m[1]),mo=parseInt(m[2]),y=parseInt(m[3]);
+  const today=new Date(); const date=new Date(y,mo-1,d);
+  const diffDays=Math.floor((new Date(today.getFullYear(),today.getMonth(),today.getDate())-date)/(1000*60*60*24));
+  if(diffDays===0) return {text:'avui',stale:false};
+  if(diffDays===1) return {text:'ahir',stale:false};
+  if(diffDays<=3) return {text:`fa ${diffDays} dies`,stale:false};
+  return {text:`${d}/${mo}/${y}`,stale:true};
+}
+
+function openNav(g,a){ window.open(/iPhone|iPad|iPod/i.test(navigator.userAgent)?a:g,'_blank'); }
+function showError(title,sub){ document.getElementById('results').innerHTML=`<div class="empty-state"><div class="empty-icon">${title.split(' ')[0]}</div><div class="empty-title">${title.replace(/^[^\s]+\s/,'')}</div><div class="empty-sub">${sub}</div></div>`; }
+
+
+window.addEventListener('load',()=>{ setMode('gps'); setTimeout(initLocation,2000); });
+</script>
+</body>
+</html>
