@@ -21,7 +21,7 @@
     Sistema operatiu : GitHub Pages
     Versió           : 1.0
     Data compilació  : 2026
-    Autor            : @el-teu-usuari
+    Autor            : carontsubs
     Llicència        : Lliure ús personal
     Connexió         : API MINCOTUR (Ministeri d'Energia d'Espanya)
 
@@ -29,7 +29,7 @@
 
 ## C:\BENZAPP> RUN APP.EXE
 
-    🔗 https://el-teu-usuari.github.io/benzapp
+    🔗 https://carontsubs.github.io/benzapp
 
     CARREGANT... ████████████████████ 100%
     APLICACIÓ INICIADA CORRECTAMENT.
